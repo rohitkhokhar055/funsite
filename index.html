@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>For Ishu 💗</title>
+<style>
+  :root{ --bg:linear-gradient(180deg,#f6f8ff,#fffaf3); --accent:#ff6b81; --accent2:#6b8cff; --muted:#334155; --radius:14px; --shadow:0 12px 35px rgba(16,24,40,0.1); }
+  *{box-sizing:border-box;font-family:Inter,Arial}
+  body{margin:0;background:var(--bg);display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px;color:var(--muted)}
+  .card{ width:100%; max-width:920px; background:white; border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; display:grid; grid-template-columns:300px 1fr; }
+  .left{ padding:20px; background:linear-gradient(180deg,rgba(255,107,129,0.09),rgba(107,140,255,0.06)); text-align:center; }
+  .hero{ width:220px;height:220px;object-fit:cover;border-radius:14px;box-shadow:0 10px 25px rgba(0,0,0,0.1) }
+  .right{ padding:26px; position:relative; overflow:hidden; min-height:520px }
+  header h1{ margin:0; font-size:22px; color:#111 } header small{ color:#94a3b8 }
+  .page{ display:none } .page.active{ display:block }
+  .questionTitle{ font-size:20px; margin-top:20px; color:#111 }
+  .choices{ margin-top:18px; display:flex; gap:12px; flex-wrap:wrap; position:relative }
+  .choice{ padding:12px 16px; background:white; border:1px solid #e5e7eb; border-radius:10px; font-weight:600; cursor:pointer; transition:0.2s }
+  .choice.active{ background:linear-gradient(90deg,var(--accent),var(--accent2)); color:white; border:none }
+  .no-btn{ padding:12px 16px; border-radius:10px; background:#f1f5f9; color:#94a3b8; font-weight:700; cursor:not-allowed; position:absolute; user-select:none; transition:0.15s ease; z-index:30 }
+  .no-btn.flee{ transform:scale(1.05) rotate(-4deg) }
+  .bubble{ position:absolute; background:white; padding:6px 10px; border-radius:12px; font-size:13px; border:1px solid #e2e8f0; white-space:nowrap; opacity:0; pointer-events:none; transition:0.2s ease; box-shadow:0 10px 30px rgba(0,0,0,0.12); }
+  .bubble.show{ opacity:1; transform:translateY(-8px) }
+  textarea{ width:100%; margin-top:15px; padding:12px; border-radius:12px; border:1px solid #e2e8f0; font-size:15px }
+  .gifRow{ margin-top:15px; display:flex; gap:10px; flex-wrap:wrap }
+  .gif{ width:45%; border-radius:12px; display:none }
+  .summary{ white-space:pre-wrap; background:#f8fafc; border-radius:12px; padding:14px; margin-top:15px; border:1px solid #e2e8f0 }
+  .actions{ margin-top:15px; display:flex; gap:10px }
+  .btn{ padding:12px 16px; border:none; border-radius:10px; font-weight:700; cursor:pointer }
+  .primary{ background:linear-gradient(90deg,var(--accent),var(--accent2)); color:white }
+  .secondary{ background:white; border:1px solid #e2e8f0 }
+  .finalGif{ width:180px; border-radius:12px; margin-top:20px; display:none }
+  .apology{ margin-top:12px; display:none; font-size:15px; font-weight:600; color:#475569; line-height:1.5 }
+  @media(max-width:860px){ .card{ grid-template-columns:1fr } .hero{ width:180px;height:180px } .gif{ width:48% } }
+</style>
+</head>
+<body>
+
+<div class="card" id="mainCard">
+  <div class="left">
+    <img class="hero" id="hero" src="https://tenor.com/hWDVtzl5qBl.gif" alt="Ishu">
+    <h2>For Ishu 💗</h2>
+    <p>Your answers stay private unless you send them.</p>
+  </div>
+
+  <div class="right">
+    <!-- Page 1 -->
+    <section id="p1" class="page active">
+      <header><h1>Hey Ishu 👀</h1><small>No button will run but never escape 😝</small></header>
+      <div class="questionTitle">1) Are you still angry?</div>
+      <div class="choices" id="p1_area">
+        <button class="choice" id="yesBtn">Yes</button>
+        <button class="no-btn" id="noBtn">No</button>
+        <div class="bubble" id="bubble"></div>
+      </div>
+    </section>
+
+    <!-- Page 2 -->
+    <section id="p2" class="page">
+      <div class="questionTitle">2) What did I do? 😿</div>
+      <div id="p2_choices" class="choices"></div>
+      <div class="gifRow" id="gifRow"><img class="gif" id="gifA"><img class="gif" id="gifB"></div>
+    </section>
+
+    <!-- Page 3 -->
+    <section id="p3" class="page">
+      <div class="questionTitle">3) Any suggestion for me? 📝</div>
+      <textarea id="suggest" placeholder="Type here..."></textarea>
+    </section>
+
+    <!-- Page 4 -->
+    <section id="p4" class="page">
+      <div class="questionTitle">Your reply 💌</div>
+      <div class="summary" id="summaryBox"></div>
+      <div class="actions">
+        <button class="btn secondary" id="copyBtn">Copy</button>
+        <button class="btn primary" id="sendBtn">Send to Rohit</button>
+      </div>
+      <img class="finalGif" id="finalGif" src="https://i.imgur.com/cjmP6gR.gif" alt="final">
+      <div class="apology" id="apology">I know I forget things sometimes…<br>I’m a baka boy 😔<br>But I promise I'm still your good kitty 🐾<br>Please don't stay mad… nya~ 💗</div>
+    </section>
+  </div>
+</div>
+
+<script>
+/* RECIPIENT is set to your Gmail */
+const RECIPIENT = "rohitkhokhar055@gmail.com";
+
+const GIFS = {
+  ignored : "https://tenor.com/jGNURdg1KdY.gif",
+  forgot  : "https://tenor.com/qI5Ra1OBWPC.gif",
+  said    : "https://tenor.com/qhCrgpEItL6.gif",
+  other   : "https://tenor.com/m7vTyRUiLfJ.gif"
+};
+
+const SLANGS = [
+  "Not clickable 😝","Ayy too slow 😹","Catch me if u can!","Baka speed too low~",
+  "Hehe runnn 😼","Nyaaaa faster!!","Miss me~ ✨","Oopsie, not today!","Too spicy to touch 🌶️",
+  "I am a ghost 🫠","Try again, silly! 😂","Almost—nope!","You're so clumsy! 💨","I vanish, nya~",
+  "Haha, you can't grab me!","Zoom zoom, bye! 🏃‍♀️","Too smooth for you 😎","Nope, not today baka!",
+  "Denied! 😏","Lol, better luck next time!"
+];
+
+let state = { q1: null, q2: null, q3: null };
+
+function show(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* PAGE 1 */
+const yesBtn = document.getElementById('yesBtn');
+const noBtn = document.getElementById('noBtn');
+const bubble = document.getElementById('bubble');
+const area = document.getElementById('p1_area');
+
+yesBtn.addEventListener('click', ()=>{ state.q1 = "Yes"; show('p2'); });
+
+function placeNo(left, top){
+  const rect = area.getBoundingClientRect();
+  const btnRect = noBtn.getBoundingClientRect();
+  left = Math.max(6, Math.min(left, rect.width - btnRect.width - 6));
+  top  = Math.max(6, Math.min(top, rect.height - btnRect.height - 6));
+  noBtn.style.left = left + 'px';
+  noBtn.style.top  = top + 'px';
+}
+
+function flee(){
+  const rect = area.getBoundingClientRect();
+  const btnRect = noBtn.getBoundingClientRect();
+  const maxLeft = Math.max(rect.width - btnRect.width - 12, 12);
+  const maxTop  = Math.max(rect.height - btnRect.height - 12, 12);
+  const left = Math.floor(Math.random() * maxLeft) + 6;
+  const top  = Math.floor(Math.random() * maxTop) + 6;
+  placeNo(left, top);
+  const slang = SLANGS[Math.floor(Math.random() * SLANGS.length)];
+  bubble.innerText = slang;
+  bubble.style.left = (left + 10) + 'px';
+  bubble.style.top  = (top - 14) + 'px';
+  bubble.classList.add('show');
+  setTimeout(()=> bubble.classList.remove('show'), 700);
+  noBtn.classList.add('flee');
+  setTimeout(()=> noBtn.classList.remove('flee'), 300);
+}
+
+['mousemove','pointermove','touchmove','touchstart','pointerdown','mousedown','click'].forEach(ev=>{
+  noBtn.addEventListener(ev, function(e){
+    e.preventDefault(); e.stopPropagation(); flee();
+  }, {passive:false});
+});
+
+setTimeout(()=>{
+  const yesRect = yesBtn.getBoundingClientRect();
+  const areaRect = area.getBoundingClientRect();
+  const initialLeft = Math.min(yesRect.right - areaRect.left + 12, areaRect.width - 60);
+  const initialTop = Math.max(12, yesRect.top - areaRect.top);
+  placeNo(initialLeft, initialTop);
+}, 80);
+
+/* PAGE 2 */
+const Q2 = [
+  {id:'ignored', text:'I ignored you 😢'},
+  {id:'forgot',  text:'I forgot something important 🥺'},
+  {id:'said',    text:'I said something wrong 😖'},
+  {id:'other',   text:'Something else…'}
+];
+const p2_choices = document.getElementById('p2_choices');
+Q2.forEach(opt=>{
+  const b = document.createElement('button');
+  b.className = 'choice';
+  b.innerText = opt.text;
+  b.onclick = ()=>{
+    state.q2 = opt.id;
+    document.getElementById('gifRow').style.display = 'flex';
+    const a = document.getElementById('gifA'), bb = document.getElementById('gifB');
+    a.src = GIFS[opt.id] || GIFS.other; a.style.display = 'block';
+    bb.src = GIFS.other; bb.style.display = 'block';
+    setTimeout(()=> show('p3'), 900);
+  };
+  p2_choices.appendChild(b);
+});
+
+/* PAGE 3 */
+const suggest = document.getElementById('suggest');
+let typingTimer = null;
+suggest.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); suggest.blur(); return; }
+  if(typingTimer) clearTimeout(typingTimer);
+  typingTimer = setTimeout(()=> { if(suggest.value.trim().length) suggest.blur(); }, 1500);
+});
+suggest.addEventListener('blur', ()=>{
+  state.q3 = suggest.value.trim();
+  prepareSummary();
+  setTimeout(()=> show('p4'), 220);
+});
+
+/* PAGE 4 */
+const summaryBox = document.getElementById('summaryBox');
+const finalGif = document.getElementById('finalGif');
+const apology = document.getElementById('apology');
+
+function prepareSummary(){
+  const one = "1) Are you still angry? → " + (state.q1 || "(no answer)");
+  const two = "2) What did I do? → " + ((Q2.find(x=>x.id===state.q2)||{}).text || "(no answer)");
+  const three = "3) Suggestion → " + (state.q3 || "(no suggestion)");
+  const extras = `\n---\nI know I forget things sometimes…\nI’m a baka boy 😔\nBut I promise I'm still your good kitty 🐾\nPlease don't stay mad… nya~ 💗`;
+  summaryBox.innerText = [one,two,three,extras].join("\n\n");
+  finalGif.style.display = 'block';
+  apology.style.display = 'block';
+}
+
+document.getElementById('copyBtn').addEventListener('click', ()=> {
+  navigator.clipboard.writeText(summaryBox.innerText).then(()=> alert('Copied!'), ()=> alert('Could not copy'));
+});
+
+document.getElementById('sendBtn').addEventListener('click', ()=> {
+  const recipient = (RECIPIENT || '').trim();
+  if(!recipient){
+    alert('Recipient email missing.');
+    return;
+  }
+  const subject = encodeURIComponent("Ishu's reply");
+  const body = encodeURIComponent(summaryBox.innerText);
+  window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
+});
+yesBtn.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') yesBtn.click(); });
+</script>
+</body>
+</html>
